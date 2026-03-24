@@ -10,6 +10,7 @@ env:
 
 jobs:
   build-and-push:
+    name: Build & Push
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -42,18 +43,23 @@ jobs:
     # only deploy on pushes to main, not on PRs
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - name: Deploy to GCP VM
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
         with:
-          host: ${{ secrets.GCP_VM_HOST }}
-          username: ${{ secrets.GCP_VM_USER }}
-          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-          script: |
-            # Required: GCP VM has no GHCR credentials by default.
-            # Private registry always needs explicit login on the deploy target.
-            echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u masha-el --password-stdin
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-            cd ${{ secrets.GCP_VM_BOT_DIR }}
-            docker compose pull
-            docker compose up -d --remove-orphans
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to GCP VM via IAP tunnel
+        run:
+         gcloud compute ssh ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_INSTANCE_NAME }} \
+          --zone=${{ secrets.GCP_ZONE }} \
+          --tunnel-through-iap \
+          --command="
+            echo '${{ secrets.CR_PAT }}' | docker login ghcr.io -u masha-el --password-stdin
+            cd ${{ secrets.GCP_VM_BOT_DIR }} &&
+            docker compose pull &&
+            docker compose up -d --remove-orphans &&
             docker image prune -f
+          "
