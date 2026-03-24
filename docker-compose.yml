@@ -1,0 +1,12 @@
+services:
+  bot:
+    image: ghcr.io/masha-el/family-bot:latest
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - bot_data:/app/data    # SQLite DB
+      - ./credentials.json:/app/credentials.json:ro
+    environment:
+      - TZ=Asia/Jerusalem
+volumes:
+  bot_data:
