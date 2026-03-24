@@ -52,7 +52,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Deploy to GCP VM via IAP tunnel
-        run:
+        run: |
          gcloud compute ssh ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_INSTANCE_NAME }} \
           --zone=${{ secrets.GCP_ZONE }} \
           --tunnel-through-iap \
