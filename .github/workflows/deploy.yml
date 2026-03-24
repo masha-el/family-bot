@@ -35,25 +35,25 @@ jobs:
             ${{ env.REGISTRY }}/${{ github.repository }}:latest
             ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }}
 
-deploy:
-  name: Deploy to Server
-  needs: build-and-push
-  runs-on: ubuntu-latest
-  # only deploy on pushes to main, not on PRs
-  if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-  steps:
-    - name: Deploy to GCP VM
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.GCP_VM_HOST }}
-        username: ${{ secrets.GCP_VM_USER }}
-        key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-        script: |
-          # Required: GCP VM has no GHCR credentials by default.
-          # Private registry always needs explicit login on the deploy target.
-          echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u masha-el --password-stdin
+  deploy:
+    name: Deploy to Server
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    # only deploy on pushes to main, not on PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to GCP VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCP_VM_HOST }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          script: |
+            # Required: GCP VM has no GHCR credentials by default.
+            # Private registry always needs explicit login on the deploy target.
+            echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u masha-el --password-stdin
 
-          cd ${{ secrets.GCP_VM_BOT_DIR }}
-          docker compose pull
-          docker compose up -d --remove-orphans
-          docker image prune -f
+            cd ${{ secrets.GCP_VM_BOT_DIR }}
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
