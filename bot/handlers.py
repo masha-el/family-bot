@@ -66,11 +66,11 @@ async def cmd_events(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         time_part = start[11:16] if 'T' in start else 'All day'
         # convert date to DD-MM-YYYY for display
         d, m, y = date_part[8:], date_part[5:7], date_part[:4]
-        display_date = f"{d}\\-{m}\\-{y}"
-        display_time = time_part.replace(':', '\\:') if time_part != 'All day' else 'All day'
-        summary = e['summary'].replace('-', '\\-').replace('.', '\\.').replace('!', '\\!')
+        display_date = escape_md(f"{d}-{m}-{y}")
+        display_time = escape_md(time_part)
+        summary = escape_md(e['summary'])
 
-        lines.append(f"📌 *{summary}*\n    🕐 {display_date} {display_time}")
+        lines.append(f"📌 *{summary}*\n↳ 🕐 {display_date} {display_time}\n")
         lines.append("───────────────────────")
     await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
 
@@ -103,8 +103,8 @@ async def cmd_remind(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             (update.effective_user.id, remind_at.isoformat(), msg)
         )
     d, m, y = ctx.args[0].split('-')
-    escaped_date = f"{d}\\-{m}\\-{y}"
-    escaped_time = ctx.args[1].replace(':', '\\:')
+    escaped_date = escape_md(f"{d}-{m}-{y}")
+    escaped_time = escape_md(ctx.args[1])
     escaped_msg = escape_md(msg)
     await update.message.reply_text(
         "✅ *Reminder set\\!*\n"
@@ -134,7 +134,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         )
     escaped_name = escape_md(name)
     m, d = date_str.split('-')
-    escaped_date = f"{m}\\-{d}"
+    escaped_date = escape_md(f"{d}-{m}")
     await update.message.reply_text(
         "✅ *Birthday added\\!*\n"
         "───────────────────────\n"
