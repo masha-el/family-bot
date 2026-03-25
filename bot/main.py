@@ -2,7 +2,7 @@ import os, logging
 from dotenv import load_dotenv
 from telegram.ext import ApplicationBuilder, CommandHandler
 from .database import init_db
-from handlers import cmd_register, cmd_events, cmd_remind, cmd_birthday, cmd_help
+from .handlers import cmd_register, cmd_events, cmd_remind, cmd_birthday, cmd_help
 from .scheduler import create_scheduler
 
 load_dotenv()
