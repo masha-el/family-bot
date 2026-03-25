@@ -185,8 +185,8 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     name = escape_md(update.effective_user.first_name or "there")
     text = (
         f"👋 *Hello, {name}\\!*\n"
-        "────────────────────\n\n"
-        "I'm your *Family Bot* \\— here to keep everyone organized and on time\\.\n\n"
+        "────────────────────\n"
+        "I'm your *Family Bot* — here to keep everyone organized and on time\\.\n\n"
         "\U0001f5d3 *What I can do:*\n"
         "• Sync with your personal Google Calendar\n"
         "• Send you reminders for events and appointments\n"
@@ -194,7 +194,7 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "⚙️ *Getting started:*\n"
         "1\\. Share your Google Calendar with the bot's service account\n"
         "2\\. Run `/register <calendar\\_id> <your name>`\n"
-        "3\\. Try `/events` to see your upcoming week\n\n"
+        "3\\. Try `/events` to see your upcoming week\n"
         "────────────────────\n"
         "Type /help to see all available commands\\."
     )
