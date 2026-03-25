@@ -176,7 +176,7 @@ async def error_handler(update: object, ctx: ContextTypes.DEFAULT_TYPE):
         f"`{escape_md(error_msg)}`"
     )
     await ctx.bot.send_message(
-        chat_id=os.environ['ADMIN_TELEGRAM_ID']
+        chat_id=os.environ['ADMIN_TELEGRAM_ID'],
         text=text,
         parse_mode="MarkdownV2"
     )
