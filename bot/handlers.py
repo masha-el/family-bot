@@ -128,19 +128,55 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         return
     name = ' '.join(ctx.args[1:-1])
     date_str = ctx.args[-1]
+    # validation and zero-pad
+    parts = date_str.split('-')
+    if len(parts) != 2 or not all(p.isdigit() for p in parts):
+        await update.message.reply_text(
+            "❌ *Invalid date format*\n"
+            "Use: `DD\\-MM`\n"
+            "_Example: /birthday add Masha 22\\-03_",
+            parse_mode="MarkdownV2"
+        )
+        return
+    day, month = parts[0].zfill(2), parts[1].zfill(2)
+    if not (1 <= int(day) <= 31 and 1 <= int(month) <= 12):
+        await update.message.reply_text(
+            "❌ *Invalid date*\n"
+            "Day must be 01\\-31, month must be 01\\-12\\.",
+            parse_mode="MarkdownV2"
+        )
+        return
+    date_str = f"{day}-{month}"  # normalized: always DD-MM zero-padded
+
     with get_conn() as conn:
         conn.execute(
             'INSERT INTO birthdays (added_by,name,birth_date) VALUES (?,?,?)',
             (update.effective_user.id, name, date_str)
         )
+    # add to the user's Google Calendar if they are registered
+    with get_conn() as conn:
+        row = conn.execute(
+            'SELECT * FROM user_calendars WHERE telegram_id=?',
+            (update.effective_user.id,)
+        ).fetchone()
+    
+    cal_status = ""
+    if row:
+        try:
+            add_birthday_event(row['calendar_id'], name, date_str)
+            cal_status = "\n\U0001f5d3 Added to your Google Calendar"
+        except Exception as e:
+            cal_status = "\n⚠️ Saved locally but failed to add to Google Calendar"
+
     escaped_name = escape_md(name)
-    m, d = date_str.split('-')
+    d, m = date_str.split('-')
     escaped_date = escape_md(f"{d}-{m}")
     await update.message.reply_text(
         "✅ *Birthday added\\!*\n"
         "────────────────────\n"
         f"🎂 *{escaped_name}*\n"
-        f"\U0001f5d3 Every year on {escaped_date}",
+        f"\U0001f5d3 Every year on {escaped_date}"
+        f"{escape_md(cal_status)}",
         parse_mode="MarkdownV2"
     )
 

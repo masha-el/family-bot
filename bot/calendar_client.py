@@ -3,7 +3,7 @@ from google.oauth2 import service_account # type: ignore
 from datetime import datetime, timedelta, timezone
 import os
 
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar']
 CREDS_PATH = os.getenv('GOOGLE_CREDENTIALS_PATH', '/app/credentials.json')
 
 def get_service():
@@ -23,3 +23,31 @@ def get_upcoming_events(calendar_id: str, days: int = 7) -> list:
         orderBy='startTime'
     ).execute()
     return result.get('items', [])
+
+def add_birthday_event(calendar_id: str, name: str, birth_date: str):
+    # birth_date format: DD-MM
+    service = get_service()
+    day, month = birth_date.split('-')
+    month = month.zfill(2) # pad 3 -> 03
+    day = day.zfill(2)
+    current_year = datetime.now().year
+
+    event = {
+        'summary': f'🎂 {name}\'s Birthday',
+        'start': {
+            'date': f'{day}-{month}-{current_year}',
+            'timeZone': 'Asia/Jerusalem'
+        },
+        'end': {
+            'date': f'{day}-{month}-{current_year}',
+            'timeZone': 'Asia/Jerusalem'
+        },
+        'recurrence': ['RRULE:FREQ=YEARLY'],
+        'reminders': {
+            'useDefault': False,
+            'overrides': [
+                {'method': 'popup', 'minutes': 1440},  # 1 day before
+            ]
+        }
+    }
+    service.events().insert(calendarId=calendar_id, body=event).execute()
