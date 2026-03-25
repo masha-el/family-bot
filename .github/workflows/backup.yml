@@ -1,0 +1,51 @@
+name: Database Backup
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # daily at 02:00 UTC (04:00 Israel time)
+  workflow_dispatch:    # allow manual trigger from Actions tab
+
+jobs:
+  backup:
+    name: Backup DB
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      
+      - name: Set Up Gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Write SSH key and derive pub key
+        run: |
+          echo "${{ secrets.GCP_DEPLOY_SSH_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+          ssh-keygen -y -f /tmp/deploy_key > /tmp/deploy_key.pub
+
+      - name: Copy DB from VM
+        run: |
+          gcloud compute ssh ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_INSTANCE_NAME}} \
+            --zone=$${{ secrets.GCP_ZONE }} \
+            --tunnel-through-iap \
+            --ssh-key-file=/tmp/deploy_key \
+            -- \
+            "docker run --rm \
+              -v family-bot_bot_data:/data \
+              -v /tmp:/backup \
+              alpine cp /data/family_bot.db /backup/family_bot.db"
+
+          gcloud compute scp \
+            ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_INSTANCE_NAME }}:/tmp/family_bot.db \
+            ./family_bot_$(date +%Y%m%d).db \
+            --zone=${{ secrets.GCP_ZONE }} \
+            --tunnel-through-iap \
+            --ssh-key-file=/tmp/deploy_key
+
+      - name: Upload backup as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: family_bot_*.db
+          retention-days: 7
