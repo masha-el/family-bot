@@ -3,7 +3,8 @@ from telegram.ext import ContextTypes
 from .database import get_conn
 from .calendar_client import get_upcoming_events
 from datetime import datetime
-import re
+import traceback
+import re, os
 
 def escape_md(text: str) -> str:
     return re.sub(r'([_*\[\]()~`>#+\-=|{}.!])', r'\\\1', str(text))
@@ -160,3 +161,22 @@ async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "───────────────────────"
     )
     await update.message.reply_text(text, parse_mode="MarkdownV2")
+
+async def error_handler(update: object, ctx: ContextTypes.DEFAULT_TYPE):
+    error_msg = ''.join(traceback.format_exception(
+        type(ctx.error), ctx.error, ctx.error.__traceback__
+    ))
+    # truncate to Telegram's 4096 char limit
+    if len(error_msg) > 3800:
+        error_msg = error_msg[-3800:]
+    
+    text = (
+        "❌ *Family Bot Error*\n"
+        "────────────────────\n"
+        f"`{escape_md(error_msg)}`"
+    )
+    await ctx.bot.send_message(
+        chat_id=os.environ['ADMIN_TELEGRAM_ID']
+        text=text,
+        parse_mode="MarkdownV2"
+    )

@@ -2,7 +2,7 @@ import os, logging
 from dotenv import load_dotenv
 from telegram.ext import ApplicationBuilder, CommandHandler
 from .database import init_db
-from .handlers import cmd_register, cmd_events, cmd_remind, cmd_birthday, cmd_help
+from .handlers import cmd_register, cmd_events, cmd_remind, cmd_birthday, cmd_help, error_handler
 from .scheduler import create_scheduler
 
 load_dotenv()
@@ -18,6 +18,8 @@ def main():
     app.add_handler(CommandHandler('remind',   cmd_remind))
     app.add_handler(CommandHandler('birthday', cmd_birthday))
     app.add_handler(CommandHandler('help',     cmd_help))
+
+    app.add_error_handler(error_handler)
 
     scheduler = create_scheduler(app.bot)
     scheduler.start()
