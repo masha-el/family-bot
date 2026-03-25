@@ -166,6 +166,8 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             add_birthday_event(row['calendar_id'], name, date_str)
             cal_status = "\n\U0001f5d3 Added to your Google Calendar"
         except Exception as e:
+            import logging
+            logging.error(f"Failed to add birthday to calendar: {e}", exc_info=True)
             cal_status = "\n⚠️ Saved locally but failed to add to Google Calendar"
 
     escaped_name = escape_md(name)
