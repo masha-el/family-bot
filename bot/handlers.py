@@ -79,12 +79,19 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f'Birthday added for {name} on {date_str}')
 
 async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    text = '''
-Available commands:
-/register <calendar_id> <name>  -- link your Google Calendar
-/events                         -- shows your next 7 days
-/remind DD-MM-YYYY HH:MM <msg>  -- set a reminder
-/birthday add <name> DD-MM      -- add a birthday
-/help                           -- list of available commands
-'''
-    await update.message.reply_text(text)
+    text = (
+        "🤖 *Family Bot Commands*\n"
+        "───────────────────────\n\n"
+        "\U0001f5d3 *Calendar*\n"
+        "`/events` — your next 7 days\n\n"
+        "⏰ *Reminders*\n"
+        "`/remind DD\\-MM\\-YYYY HH:MM <message>`\n"
+        "_Example: /remind 25\\-12\\-2025 09:00 Buy gifts_\n\n"
+        "🎂 *Birthdays*\n"
+        "`/birthday add <name> MM\\-DD`\n"
+        "_Example: /birthday add Masha 03\\-15_\n\n"
+        "⚙️ *Setup*\n"
+        "`/register <calendar\\_id> <your name>`\n\n"
+        "───────────────────────"
+    )
+    await update.message.reply_text(text, parse_mode="MarkdownV2")
