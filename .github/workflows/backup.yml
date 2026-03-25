@@ -27,7 +27,7 @@ jobs:
       - name: Copy DB from VM
         run: |
           gcloud compute ssh ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_INSTANCE_NAME}} \
-            --zone=$${{ secrets.GCP_ZONE }} \
+            --zone=${{ secrets.GCP_ZONE }} \
             --tunnel-through-iap \
             --ssh-key-file=/tmp/deploy_key \
             -- \
