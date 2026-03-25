@@ -15,7 +15,7 @@ async def cmd_register(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if len(args) < 2:
         await update.message.reply_text(
             "⚙️ *Register Your Calendar*\n"
-            "───────────────────────\n"
+            "────────────────────\n"
             "Usage: `/register <calendar\\_id> <your name>`\n"
             "_Your calendar ID is found in Google Calendar_\n"
             "_Settings \\> Integrate calendar_",
@@ -31,7 +31,7 @@ async def cmd_register(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     escaped_name = escape_md(name)
     await update.message.reply_text(
         "✅ *Registration complete\\!*\n"
-        "───────────────────────\n"
+        "────────────────────\n"
         f"👤 *{escaped_name}*\n"
         "Your Google Calendar is now linked\\.\n"
         "Try `/events` to see your upcoming week\\.",
@@ -60,7 +60,7 @@ async def cmd_events(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             parse_mode="MarkdownV2"
         )
         return
-    lines = ["\U0001f5d3 *Your next 7 days*\n───────────────────────"]
+    lines = ["\U0001f5d3 *Your next week*\n────────────────────"]
     for e in events:
         start = e['start'].get('dateTime', e['start'].get('date'))
         date_part = start[:10]
@@ -72,7 +72,7 @@ async def cmd_events(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         summary = escape_md(e['summary'])
 
         lines.append(f"📌 *{summary}*\n↳ 🕐 {display_date} {display_time}\n")
-        lines.append("───────────────────────")
+        lines.append("────────────────────")
     await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
 
 async def cmd_remind(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -80,7 +80,7 @@ async def cmd_remind(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if len(ctx.args) < 3:
         await update.message.reply_text(
             "⏰ *Set a Reminder*\n"
-            "───────────────────────\n"
+            "────────────────────\n"
             "Usage: `/remind DD\\-MM\\-YYYY HH:MM <message>`\n"
             "_Example: /remind 25\\-12\\-2025 09:00 Buy gifts_",
             parse_mode="MarkdownV2"
@@ -109,7 +109,7 @@ async def cmd_remind(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     escaped_msg = escape_md(msg)
     await update.message.reply_text(
         "✅ *Reminder set\\!*\n"
-        "───────────────────────\n"
+        "────────────────────\n"
         f"\U0001f5d3 {escaped_date} at {escaped_time}\n"
         f"💬 {escaped_msg}",
         parse_mode="MarkdownV2"
@@ -120,7 +120,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if len(ctx.args) < 3 or ctx.args[0] != 'add':
         await update.message.reply_text(
             "🎂 *Add a Birthday*\n"
-            "───────────────────────\n"
+            "────────────────────\n"
             "Usage: `/birthday add <name> MM\\-DD`\n"
             "_Example: /birthday add Masha 03\\-15_",
             parse_mode="MarkdownV2"
@@ -138,7 +138,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     escaped_date = escape_md(f"{d}-{m}")
     await update.message.reply_text(
         "✅ *Birthday added\\!*\n"
-        "───────────────────────\n"
+        "────────────────────\n"
         f"🎂 *{escaped_name}*\n"
         f"\U0001f5d3 Every year on {escaped_date}",
         parse_mode="MarkdownV2"
@@ -147,7 +147,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     text = (
         "🤖 *Family Bot Commands*\n"
-        "───────────────────────\n\n"
+        "────────────────────\n\n"
         "\U0001f5d3 *Calendar*\n"
         "`/events` — your next 7 days\n\n"
         "⏰ *Reminders*\n"
@@ -158,7 +158,7 @@ async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "_Example: /birthday add Masha 03\\-15_\n\n"
         "⚙️ *Setup*\n"
         "`/register <calendar\\_id> <your name>`\n\n"
-        "───────────────────────"
+        "────────────────────"
     )
     await update.message.reply_text(text, parse_mode="MarkdownV2")
 
@@ -180,3 +180,22 @@ async def error_handler(update: object, ctx: ContextTypes.DEFAULT_TYPE):
         text=text,
         parse_mode="MarkdownV2"
     )
+
+async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    name = escape_md(update.effective_user.first_name or "there")
+    text = (
+        f"👋 *Hello, {name}\\!*\n"
+        "────────────────────\n\n"
+        "I'm your *Family Bot* \\— here to keep everyone organized and on time\\.\n\n"
+        "\U0001f5d3 *What I can do:*\n"
+        "• Sync with your personal Google Calendar\n"
+        "• Send you reminders for events and appointments\n"
+        "• Wish the family happy birthday automatically\n\n"
+        "⚙️ *Getting started:*\n"
+        "1\\. Share your Google Calendar with the bot's service account\n"
+        "2\\. Run `/register <calendar\\_id> <your name>`\n"
+        "3\\. Try `/events` to see your upcoming week\n\n"
+        "────────────────────\n"
+        "Type /help to see all available commands\\."
+    )
+    await update.message.reply_text(text, parse_mode="MarkdownV2")
