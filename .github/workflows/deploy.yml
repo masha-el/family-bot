@@ -53,9 +53,12 @@ jobs:
 
       - name: Deploy to GCP VM via IAP tunnel
         run: |
+         echo "${{ secrets.GCP_DEPLOY_SSH_KEY }}" > /tmp/deploy_key
+         chmod 600 /tmp/deploy_key
          gcloud compute ssh ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_INSTANCE_NAME }} \
           --zone=${{ secrets.GCP_ZONE }} \
           --tunnel-through-iap \
+          --ssh-key-file=/tmp/deploy_key \
           --command="
             echo '${{ secrets.CR_PAT }}' | docker login ghcr.io -u masha-el --password-stdin
             cd ${{ secrets.GCP_VM_BOT_DIR }} &&
