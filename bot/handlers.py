@@ -164,7 +164,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if row:
         try:
             add_birthday_event(row['calendar_id'], name, date_str)
-            cal_status = "\n🇬Added to your Google Calendar"
+            cal_status = "\n🌐 Added to your Google Calendar"
         except Exception as e:
             import logging
             logging.error(f"Failed to add birthday to calendar: {e}", exc_info=True)
@@ -176,7 +176,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "✅ *Birthday added\\!*\n"
         "────────────────────\n"
-        f"🎂 *{escaped_name}*\n"
+        f"🎉 *{escaped_name}*\n"
         f"🔄 Every year on {escaped_date}"
         f"{escape_md(cal_status)}",
         parse_mode="MarkdownV2"
@@ -310,7 +310,7 @@ async def cmd_birthday_delete(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         for i in sorted(set(indices)):  # sorted() handles duplicate entries
             row = rows[i]
             conn.execute('DELETE FROM birthdays WHERE id=?', (row['id'],))
-            deleted.append(f"🎂 {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
+            deleted.append(f"➖ {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
     lines = ["✅ *Deleted:*\n────────────────────"] + deleted + ["────────────────────"]
     await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
 
