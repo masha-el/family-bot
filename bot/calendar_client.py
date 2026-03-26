@@ -1,5 +1,5 @@
-from googleapiclient.discovery import build # type: ignore
-from google.oauth2 import service_account # type: ignore
+from googleapiclient.discovery import build 
+from google.oauth2 import service_account 
 from datetime import datetime, timedelta, timezone
 import os
 
@@ -24,7 +24,7 @@ def get_upcoming_events(calendar_id: str, days: int = 7) -> list:
     ).execute()
     return result.get('items', [])
 
-def add_birthday_event(calendar_id: str, name: str, birth_date: str):
+def add_birthday_event(calendar_id: str, name: str, birth_date: str) -> str:
     # birth_date format: DD-MM
     service = get_service()
     day, month = birth_date.split('-')
@@ -51,4 +51,9 @@ def add_birthday_event(calendar_id: str, name: str, birth_date: str):
             ]
         }
     }
-    service.events().insert(calendarId=calendar_id, body=event).execute()
+    result = service.events().insert(calendarId=calendar_id, body=event).execute()
+    return result.get('id')
+    
+def delete_birthday_event(calendar_id: str, event_id: str):
+    service = get_service()
+    service.events().delete(calendarId=calendar_id, eventId=event_id).execute()

@@ -19,10 +19,11 @@ def init_db():
                 sent        INTEGER DEFAULT 0
             );
             CREATE TABLE IF NOT EXISTS birthdays (
-                id          INTEGER PRIMARY KEY AUTOINCREMENT,
-                added_by    INTEGER NOT NULL,
-                name        TEXT NOT NULL,
-                birth_date  TEXT NOT NULL   -- MM-DD
+                id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                added_by          INTEGER NOT NULL,
+                name              TEXT NOT NULL,
+                birth_date        TEXT NOT NULL,   -- DD-MM
+                calendar_event_id TEXT      -- stores Google Calendar event id
                 );
         ''')
 

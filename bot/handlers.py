@@ -1,10 +1,11 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from .database import get_conn
-from .calendar_client import get_upcoming_events, add_birthday_event
+from .calendar_client import get_upcoming_events, add_birthday_event, delete_birthday_event
 from datetime import datetime
 import traceback
 import re, os
+import logging
 
 def escape_md(text: str) -> str:
     return re.sub(r'([_*\[\]()~`>#+\-=|{}.!])', r'\\\1', str(text))
@@ -148,11 +149,6 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         return
     date_str = f"{day}-{month}"  # normalized: always DD-MM zero-padded
 
-    with get_conn() as conn:
-        conn.execute(
-            'INSERT INTO birthdays (added_by,name,birth_date) VALUES (?,?,?)',
-            (update.effective_user.id, name, date_str)
-        )
     # add to the user's Google Calendar if they are registered
     with get_conn() as conn:
         row = conn.execute(
@@ -161,14 +157,20 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         ).fetchone()
     
     cal_status = ""
+    calendar_event_id = None
     if row:
         try:
-            add_birthday_event(row['calendar_id'], name, date_str)
+            calendar_event_id = add_birthday_event(row['calendar_id'], name, date_str)
             cal_status = "\n🌐 Added to your Google Calendar"
         except Exception as e:
-            import logging
             logging.error(f"Failed to add birthday to calendar: {e}", exc_info=True)
             cal_status = "\n⚠️ Saved locally but failed to add to Google Calendar"
+    
+    with get_conn() as conn:
+        conn.execute(
+           'INSERT INTO birthdays (added_by, name, birth_date, calendar_event_id) VALUES (?,?,?,?)',
+           (update.effective_user.id, name, date_str, calendar_event_id) 
+        ) 
 
     escaped_name = escape_md(name)
     d, m = date_str.split('-')
@@ -310,6 +312,19 @@ async def cmd_birthday_delete(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         for i in sorted(set(indices)):  # sorted() handles duplicate entries
             row = rows[i]
             conn.execute('DELETE FROM birthdays WHERE id=?', (row['id'],))
+
+            # delete from Google Calendar if event id exists
+            if row['calendar_event_id']:
+                user_row = conn.execute(
+                    'SELECT calendar_id FROM user_calendars WHERE telegram_id=?',
+                    (uid,)
+                ).fetchone()
+                if user_row:
+                    try:
+                        delete_birthday_event(user_row['calendar_id'], row['calendar_event_id'])
+                    except Exception as e:
+                        logging.error(f"Failed to delete calendar event: {e}", exc_info=True)
+
             deleted.append(f"🗑️ {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
     lines = ["✅ *Deleted:*\n────────────────────"] + deleted + ["────────────────────"]
     await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
