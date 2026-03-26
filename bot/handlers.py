@@ -17,7 +17,7 @@ async def cmd_register(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "⚙️ *Register Your Calendar*\n"
             "────────────────────\n"
-            "Usage: /register `<calendar\\_id> <your name>`\n"
+            "Usage: `/register <calendar\\_id> <your name>`\n"
             "_Your calendar ID is found in Google Calendar_\n"
             "_Settings \\> Integrate calendar_",
             parse_mode="MarkdownV2"
@@ -49,7 +49,7 @@ async def cmd_events(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not row:
         await update.message.reply_text(
             "⚙️ You're not registered yet\\.\n"
-            "Use /register `<calendar\\_id> <your name>` to get started\\.",
+            "Use `/register <calendar\\_id> <your name>` to get started\\.",
             parse_mode="MarkdownV2"
         )
         return
@@ -82,8 +82,8 @@ async def cmd_remind(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "⏰ *Set a Reminder*\n"
             "────────────────────\n"
-            "Usage: `/remind DD\\-MM\\-YYYY HH:MM <message>`\n"
-            "_Example: /remind 25\\-12\\-2025 09:00 Buy gifts_",
+            "Usage: `/remind <full-date> <time> <message>`\n"
+            "_Example: `/remind` 25\\-12\\-2026 09:00 Buy gifts_",
             parse_mode="MarkdownV2"
         )
         return
@@ -95,7 +95,7 @@ async def cmd_remind(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "❌ *Invalid date format*\n"
             "Use: `DD\\-MM\\-YYYY HH:MM`\n"
-            "_Example: 25\\-12\\-2025 09:00_",
+            "_Example: 25\\-12\\-2026 09:00_",
             parse_mode="MarkdownV2"
         )
         return
@@ -122,16 +122,16 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "🎂 *Add a Birthday*\n"
             "────────────────────\n"
-            "Usage: /bday\\_add `<name>` DD\\-MM\n"
-            "_Example: /bday\\_add Masha 10\\-01_",
+            "Usage: `/bday\\_add <name> <day-month>`\n"
+            "_Example: `/bday\\_add` Masha 10\\-01_",
             parse_mode="MarkdownV2"
         )
         return
     if len(ctx.args) < 2:
         await update.message.reply_text(
             "❌ *Missing arguments*\n"
-            "Usage: /bday\\_add `<name>` DD\\-MM\n"
-            "_Example: /bday\\_add Masha 10\\-01_",
+            "Usage: `/bday\\_add <name> <day-month>`\n"
+            "_Example: `/bday\\_add` Masha 10\\-01_",
             parse_mode="MarkdownV2"
         )
         return 
@@ -145,7 +145,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "❌ *Invalid date format*\n"
             "Use: DD\\-MM\n"
-            "_Example: /bday\\_add Masha 10\\-01_",
+            "_Example: `/bday\\_add` Masha 10\\-01_",
             parse_mode="MarkdownV2"
         )
         return
@@ -200,7 +200,7 @@ async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "\U0001f5d3 *Calendar*\n"
         "/events — your next 7 days\n\n"
         "⏰ *Reminders*\n"
-        "/remind `<full date> <time> <message>`\n"
+        "/remind `<full-date> <time> <message>`\n"
         "_Example: `/remind` 25\\-12\\-2026 09:00 Buy gifts_\n\n"
         "🎂 *Birthdays commands:*\n"
         "/bday\\_add `<name> <day-month>`\n"
@@ -262,7 +262,7 @@ async def cmd_birthdays_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not rows:
         await update.message.reply_text(
             "📝 *No birthdays added yet*\n"
-            "Use `/bday add <name> DD\\-MM` to add one\\.",
+            "Use `/bday\\_add <name> <day-month>` to add one\\.",
             parse_mode="MarkdownV2"
         )
         return
