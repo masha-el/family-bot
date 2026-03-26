@@ -310,7 +310,7 @@ async def cmd_birthday_delete(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         for i in sorted(set(indices)):  # sorted() handles duplicate entries
             row = rows[i]
             conn.execute('DELETE FROM birthdays WHERE id=?', (row['id'],))
-            deleted.append(f"➖ {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
+            deleted.append(f"🗑️ {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
     lines = ["✅ *Deleted:*\n────────────────────"] + deleted + ["────────────────────"]
     await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
 
