@@ -243,8 +243,8 @@ async def cmd_birthdays_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
     with get_conn() as conn:
         rows = conn.execute(
-        'SELECT name, birth_date FROM birthdays WHERE added_by=?',
-    ).fetchall()
+            'SELECT name, birth_date FROM birthdays WHERE added_by=?',
+        ).fetchall()
     if not rows:
         await update.message.reply_text(
             "📝 *No birthdays added yet*\n"
