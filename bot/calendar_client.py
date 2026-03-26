@@ -26,17 +26,12 @@ def get_upcoming_events(calendar_id: str, days: int = 7) -> list:
 
 def add_birthday_event(calendar_id: str, name: str, birth_date: str):
     # birth_date format: DD-MM
-    import logging
-
     service = get_service()
     day, month = birth_date.split('-')
     month = month.zfill(2) # pad 3 -> 03
     day = day.zfill(2)
     current_year = datetime.now().year
     date_formatted = f'{current_year}-{month}-{day}'
-
-    logging.info(f"Creating birthday event: name={name}, date={date_formatted}, calendar={calendar_id}")
-
 
     event = {
         'summary': f'🎂 {name}\'s Birthday',
@@ -56,5 +51,4 @@ def add_birthday_event(calendar_id: str, name: str, birth_date: str):
             ]
         }
     }
-    logging.info(f"Event body: {event}")
     service.events().insert(calendarId=calendar_id, body=event).execute()

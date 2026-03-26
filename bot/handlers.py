@@ -191,9 +191,10 @@ async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "⏰ *Reminders*\n"
         "`/remind DD\\-MM\\-YYYY HH:MM <message>`\n"
         "_Example: /remind 25\\-12\\-2025 09:00 Buy gifts_\n\n"
-        "🎂 *Birthdays*\n"
+        "🎂 *Birthdays commands:*\n"
         "`/birthday add <name> MM\\-DD`\n"
-        "_Example: /birthday add Masha 03\\-15_\n\n"
+        "_Example: /birthday add Masha 03\\-15_\n"
+        "`/bdays` - see all birthdays you added\n\n"
         "⚙️ *Setup*\n"
         "`/register <calendar\\_id> <your name>`\n\n"
         "────────────────────"
@@ -237,3 +238,21 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "Type /help to see all available commands\\."
     )
     await update.message.reply_text(text, parse_mode="MarkdownV2")
+
+async def cmd_birthdays_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    uid = update.effective_user.id
+    with get_conn().execute(
+        'SELECT name, birth_date FROM birthdays WHERE added_by=?',
+    ).fetchall()
+    if not rows:
+        await update.message.reply_text(
+            "📝 *No birthdays added yet*\n"
+            "Use `/birthday add <name> DD\\-MM` to add one\\.",
+            parse_mode="MarkdownV2"
+        )
+        return
+    lines = ["📝 *Birthdays you added:*\n────────────────────"]
+    for row in rows:
+        lines.append(f"• {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
+    lines.append("────────────────────")
+    await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")

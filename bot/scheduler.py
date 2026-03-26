@@ -30,7 +30,8 @@ async def check_birthdays(bot):
             for user in users:
                 await bot.send_message(
                     user['telegram_id'],
-                    f'U0001f382 Happy Birthday {bday["name"]}!'
+                    f"\U0001f382 It's {bday['name']}'s birthday today!\n"
+                    f"Don't forget to wish them a Happy Birthday! \U0001f389"
                 )
 
 def create_scheduler(bot):
