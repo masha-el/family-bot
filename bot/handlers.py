@@ -194,7 +194,7 @@ async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "🎂 *Birthdays commands:*\n"
         "`/birthday add <name> MM\\-DD`\n"
         "_Example: /birthday add Masha 03\\-15_\n"
-        "`/bdays` - see all birthdays you added\n\n"
+        "`/bdays` \\- — see all birthdays you added\n\n"
         "⚙️ *Setup*\n"
         "`/register <calendar\\_id> <your name>`\n\n"
         "────────────────────"
