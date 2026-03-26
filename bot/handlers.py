@@ -17,7 +17,7 @@ async def cmd_register(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "⚙️ *Register Your Calendar*\n"
             "────────────────────\n"
-            "Usage: `/register <calendar\\_id> <your name>`\n"
+            "Usage: /register `<calendar\\_id> <your name>`\n"
             "_Your calendar ID is found in Google Calendar_\n"
             "_Settings \\> Integrate calendar_",
             parse_mode="MarkdownV2"
@@ -35,7 +35,7 @@ async def cmd_register(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "────────────────────\n"
         f"👤 *{escaped_name}*\n"
         "Your Google Calendar is now linked\\.\n"
-        "Try `/events` to see your upcoming week\\.",
+        "Try /events to see your upcoming week\\.",
         parse_mode="MarkdownV2"
     )
 
@@ -49,7 +49,7 @@ async def cmd_events(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not row:
         await update.message.reply_text(
             "⚙️ You're not registered yet\\.\n"
-            "Use `/register <calendar\\_id> <your name>` to get started\\.",
+            "Use /register `<calendar\\_id> <your name>` to get started\\.",
             parse_mode="MarkdownV2"
         )
         return
@@ -117,25 +117,35 @@ async def cmd_remind(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     )
 
 async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    # /bday add <name> <DD-MM>
-    if len(ctx.args) < 3 or ctx.args[0] != 'add':
+    # /bday_add <name> <DD-MM>
+    if not ctx.args:
         await update.message.reply_text(
             "🎂 *Add a Birthday*\n"
             "────────────────────\n"
-            "Usage: `/bday add <name> MM\\-DD`\n"
-            "_Example: /bday add Masha 03\\-15_",
+            "Usage: /bday\\_add `<name>` DD\\-MM\n"
+            "_Example: /bday\\_add Masha 10\\-01_",
             parse_mode="MarkdownV2"
         )
         return
-    name = ' '.join(ctx.args[1:-1])
+    if len(ctx.args) < 2:
+        await update.message.reply_text(
+            "❌ *Missing arguments*\n"
+            "Usage: /bday\\_add `<name>` DD\\-MM\n"
+            "_Example: /bday\\_add Masha 10\\-01_",
+            parse_mode="MarkdownV2"
+        )
+        return 
+    
+    name = ' '.join(ctx.args[:-1])
     date_str = ctx.args[-1]
+
     # validation and zero-pad
     parts = date_str.split('-')
     if len(parts) != 2 or not all(p.isdigit() for p in parts):
         await update.message.reply_text(
             "❌ *Invalid date format*\n"
-            "Use: `DD\\-MM`\n"
-            "_Example: /bday add Masha 22\\-03_",
+            "Use: DD\\-MM\n"
+            "_Example: /bday\\_add Masha 10\\-01_",
             parse_mode="MarkdownV2"
         )
         return
@@ -173,8 +183,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         ) 
 
     escaped_name = escape_md(name)
-    d, m = date_str.split('-')
-    escaped_date = escape_md(f"{d}-{m}")
+    escaped_date = escape_md(date_str)
     await update.message.reply_text(
         "✅ *Birthday added\\!*\n"
         "────────────────────\n"
@@ -194,13 +203,13 @@ async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "/remind DD\\-MM\\-YYYY HH:MM `<message>`\n"
         "_Example: `/remind` 25\\-12\\-2025 09:00 Buy gifts_\n\n"
         "🎂 *Birthdays commands:*\n"
-        "/bday add `<name>` MM\\-DD\n"
+        "/bday\\_add `<name>` MM\\-DD\n"
         "_Example: `/bday` add Masha 01\\-10_\n\n"
-        "`/bdays` — see all birthdays you added\n\n"
-        "`/bdel` — get numbered lists of added birthdays\n"
+        "/bdays — see all birthdays you added\n\n"
+        "/bdel — get numbered list, use `/bdel` with a number to delete\n"
         "_Example: use number to delete — `/bdel` 1 or `/bdel` 1 2_\n\n"
         "⚙️ *Setup*\n"
-        "⚠️ Don't forget to share your calendar with the Bot Service Account  "
+        "⚠️ Don't forget to share your calendar with the Bot Service Account\n"
         "/register `<calendar\\_id> <your name>`\n\n"
         "────────────────────"
     )
