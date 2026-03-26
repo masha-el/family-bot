@@ -195,6 +195,8 @@ async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "`/birthday add <name> MM\\-DD`\n"
         "_Example: /birthday add Masha 03\\-15_\n\n"
         "`/bdays` — see all birthdays you added\n\n"
+        "`/bdel` — delete a birthday or several\n"
+        "_Example: /bdel 1 or /bdel 1 2_\n\n"
         "⚙️ *Setup*\n"
         "`/register <calendar\\_id> <your name>`\n\n"
         "────────────────────"
@@ -256,4 +258,58 @@ async def cmd_birthdays_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     for row in rows:
         lines.append(f"• {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
     lines.append("────────────────────")
+    await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
+
+async def cmd_birthday_delete(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    uid = update.effective_user.id
+
+    #no argument - show numbered list
+    if not ctx.args:
+        with get_conn() as conn:
+            rows = conn.execute(
+                'SELECT id, name, birth_date FROM birthdays WHERE added_by=?', (uid,)
+            ).fetchall()
+        if not rows:
+            await update.message.reply_text(
+                "🎂 *No birthdays to delete*",
+                parse_mode="MarkdownV2"
+            )
+            return
+        lines = ["🎂 *Select number\\(s\\) to delete:*\n────────────────────"]
+        for i, row in enumerate(rows, start=1):
+            lines.append(f"{i}\\. {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
+        lines.append("────────────────────")
+        lines.append("_Use /bdel 1 or /bdel 1 2 3 to delete multiple_")
+        await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
+        return
+    
+    # validation for args that they are numbers
+    if not all(arg.isdigit() for arg in ctx.args):
+        await update.message.reply_text(
+            "❌ Use numbers only\\. Use `/bdel` to see the list\\.",
+            parse_mode="MarkdownV2"
+        )
+        return
+    
+    with get_conn() as conn:
+        rows = conn.execute(
+            'SELECT id, name, birth_date FROM birthdays WHERE added_by=?', (uid,)
+        ).fetchall()
+        # validation that all numbers are in range
+        indices = [int(arg) - 1 for arg in ctx.args]
+        invalid = [i + 1 for i in indices if i < 0 or i >= len(rows)]
+        if invalid:
+            invalid_str = escape_md(', '.join(str(n) for n in invalid))
+            await update.message.reply_text(
+               f"❌ *Invalid number\\(s\\):* {invalid_str}\\. Use `/bdel` to see the list\\.",
+                parse_mode="MarkdownV2" 
+            )
+            return
+        # delete all selected bdays
+        deleted = []
+        for i in sorted(set(indices)):  # sorted() handles duplicate entries
+            row = rows[i]
+            conn.execute('DELETE FROM birthdays WHERE id=?', (row['id'],))
+            deleted.append(f"🎂 {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
+    lines = ["✅ *Deleted:*\n────────────────────"] + deleted + ["────────────────────"]
     await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
