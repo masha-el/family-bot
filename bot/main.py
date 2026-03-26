@@ -1,8 +1,8 @@
 import os, logging
 from dotenv import load_dotenv
-from telegram.ext import ApplicationBuilder, CommandHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from .database import init_db
-from .handlers import cmd_register, cmd_events, cmd_remind, cmd_birthday, cmd_help, cmd_birthdays_list, cmd_start, cmd_birthday_delete, error_handler
+from .handlers import cmd_register, cmd_events, cmd_remind, cmd_birthday, cmd_help, cmd_birthdays_list, cmd_start, cmd_birthday_delete, cmd_unknown, error_handler
 from .scheduler import create_scheduler
 
 load_dotenv()
