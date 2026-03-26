@@ -116,13 +116,13 @@ async def cmd_remind(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     )
 
 async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    # /birthday add <name> <DD-MM>
+    # /bday add <name> <DD-MM>
     if len(ctx.args) < 3 or ctx.args[0] != 'add':
         await update.message.reply_text(
             "🎂 *Add a Birthday*\n"
             "────────────────────\n"
-            "Usage: `/birthday add <name> MM\\-DD`\n"
-            "_Example: /birthday add Masha 03\\-15_",
+            "Usage: `/bday add <name> MM\\-DD`\n"
+            "_Example: /bday add Masha 03\\-15_",
             parse_mode="MarkdownV2"
         )
         return
@@ -134,7 +134,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "❌ *Invalid date format*\n"
             "Use: `DD\\-MM`\n"
-            "_Example: /birthday add Masha 22\\-03_",
+            "_Example: /bday add Masha 22\\-03_",
             parse_mode="MarkdownV2"
         )
         return
@@ -164,7 +164,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if row:
         try:
             add_birthday_event(row['calendar_id'], name, date_str)
-            cal_status = "\n\U0001f5d3 Added to your Google Calendar"
+            cal_status = "\n🇬Added to your Google Calendar"
         except Exception as e:
             import logging
             logging.error(f"Failed to add birthday to calendar: {e}", exc_info=True)
@@ -177,7 +177,7 @@ async def cmd_birthday(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "✅ *Birthday added\\!*\n"
         "────────────────────\n"
         f"🎂 *{escaped_name}*\n"
-        f"\U0001f5d3 Every year on {escaped_date}"
+        f"🔄 Every year on {escaped_date}"
         f"{escape_md(cal_status)}",
         parse_mode="MarkdownV2"
     )
@@ -192,8 +192,8 @@ async def  cmd_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "`/remind DD\\-MM\\-YYYY HH:MM <message>`\n"
         "_Example: /remind 25\\-12\\-2025 09:00 Buy gifts_\n\n"
         "🎂 *Birthdays commands:*\n"
-        "`/birthday add <name> MM\\-DD`\n"
-        "_Example: /birthday add Masha 03\\-15_\n\n"
+        "`/bday add <name> MM\\-DD`\n"
+        "_Example: /bday add Masha 03\\-15_\n\n"
         "`/bdays` — see all birthdays you added\n\n"
         "`/bdel` — delete a birthday or several\n"
         "_Example: /bdel 1 or /bdel 1 2_\n\n"
@@ -250,7 +250,7 @@ async def cmd_birthdays_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not rows:
         await update.message.reply_text(
             "📝 *No birthdays added yet*\n"
-            "Use `/birthday add <name> DD\\-MM` to add one\\.",
+            "Use `/bday add <name> DD\\-MM` to add one\\.",
             parse_mode="MarkdownV2"
         )
         return
@@ -313,3 +313,11 @@ async def cmd_birthday_delete(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             deleted.append(f"🎂 {escape_md(row['name'])} — {escape_md(row['birth_date'])}")
     lines = ["✅ *Deleted:*\n────────────────────"] + deleted + ["────────────────────"]
     await update.message.reply_text('\n'.join(lines), parse_mode="MarkdownV2")
+
+async def cmd_unknown(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    command = update.message.text.split()[0]
+    await update.message.reply_text(
+        f"❌ *Unknown command:* `{escape_md(command)}`\n"
+        "Use /help to see all available commands\\.",
+        parse_mode="MarkdownV2"
+    )
