@@ -232,12 +232,12 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "I'm your *Family Bot* — here to keep everyone organized and on time\\.\n\n"
         "\U0001f5d3 *What I can do:*\n"
         "• Sync with your personal Google Calendar\n"
-        "• Send you reminders for events and appointments\n"
-        "• Wish the family happy birthday automatically\n\n"
+        "• Send you reminders for events and appointments after you add them\n"
+        "• Remind you of family or anyone's birthday\n\n"
         "⚙️ *Getting started:*\n"
         "1\\. Share your Google Calendar with the bot's service account\n"
         "2\\. Run `/register <calendar\\_id> <your name>`\n"
-        "3\\. Try `/events` to see your upcoming week\n"
+        "3\\. Try `/events` to see your upcoming week events\n"
         "────────────────────\n"
         "Type /help to see all available commands\\."
     )
@@ -269,7 +269,7 @@ async def cmd_birthday_delete(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not ctx.args:
         with get_conn() as conn:
             rows = conn.execute(
-                'SELECT id, name, birth_date FROM birthdays WHERE added_by=?', (uid,)
+                'SELECT id, name, birth_date, calendar_event_id FROM birthdays WHERE added_by=?', (uid,)
             ).fetchall()
         if not rows:
             await update.message.reply_text(
@@ -295,7 +295,7 @@ async def cmd_birthday_delete(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     
     with get_conn() as conn:
         rows = conn.execute(
-            'SELECT id, name, birth_date FROM birthdays WHERE added_by=?', (uid,)
+            'SELECT id, name, birth_date, calendar_event_id FROM birthdays WHERE added_by=?', (uid,)
         ).fetchall()
         # validation that all numbers are in range
         indices = [int(arg) - 1 for arg in ctx.args]
