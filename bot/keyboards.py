@@ -8,6 +8,12 @@ def main_keyboard():
 
 def events_keyboard():
     return InlineKeyboardMarkup([[
+        InlineKeyboardButton('🔄 Refresh', callback_data='events_refresh'),
+        InlineKeyboardButton('📅 Next 14 days', callback_data='events_14')
+    ]])
+
+def birthdays_keyboard():
+    return InlineKeyboardMarkup([[
         InlineKeyboardButton('➕ Add birthday', callback_data='bday_add_start'),
         InlineKeyboardButton('🗑️ Delete', callback_data='bday_del_start')
     ]])
