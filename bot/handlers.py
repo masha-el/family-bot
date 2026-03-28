@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from .database import get_conn
-from .calendar_client import get_upcoming_events, add_birthday_event, delete_birthday_event
+from .calendar_client import get_upcoming_events
 from .keyboards import main_keyboard, events_keyboard, birthdays_keyboard, registration_keyboard
 from datetime import datetime
 import traceback

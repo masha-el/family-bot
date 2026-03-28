@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler,Call
 from .database import init_db
 from .handlers import (
     cmd_help, cmd_start, 
-    cmd_unknown, error_handler,
+    cmd_unknown, error_handler, cmd_reminders_btn,
     cmd_events_btn, cmd_birthdays_btn, cmd_settings_btn
 )
 from .conversations import remind_conversation, bday_conversation, reg_conversation
@@ -35,6 +35,8 @@ def main():
     app.add_handler(MessageHandler(filters.Regex('^🗓️ Events$'),    cmd_events_btn))
     app.add_handler(MessageHandler(filters.Regex('^🎂 Birthdays$'), cmd_birthdays_btn))
     app.add_handler(MessageHandler(filters.Regex('^⚙️ Settings$'),  cmd_settings_btn))
+    app.add_handler(MessageHandler(filters.Regex('^📋 Reminders$'), cmd_reminders_btn))
+    app.add_handler(MessageHandler(filters.Regex('^❓ Help$'),      cmd_help))
     
     # unknown command handler — always last
     app.add_handler(MessageHandler(filters.COMMAND, cmd_unknown))

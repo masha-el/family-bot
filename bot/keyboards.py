@@ -3,7 +3,8 @@ from telegram import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardBu
 def main_keyboard():
     return ReplyKeyboardMarkup([
         ['🗓️ Events', '⏰ Remind me'],
-        ['🎂 Birthdays', '⚙️ Settings']
+        ['🎂 Birthdays','📌 Reminders'],
+        ['❓ Help', '⚙️ Settings']
     ], resize_keyboard=True)
 
 def events_keyboard():
