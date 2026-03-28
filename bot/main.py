@@ -35,7 +35,7 @@ def main():
     app.add_handler(MessageHandler(filters.Regex('^🗓️ Events$'),    cmd_events_btn))
     app.add_handler(MessageHandler(filters.Regex('^🎂 Birthdays$'), cmd_birthdays_btn))
     app.add_handler(MessageHandler(filters.Regex('^⚙️ Settings$'),  cmd_settings_btn))
-    app.add_handler(MessageHandler(filters.Regex('^📋 Reminders$'), cmd_reminders_btn))
+    app.add_handler(MessageHandler(filters.Regex('^📌 Reminders$'), cmd_reminders_btn))
     app.add_handler(MessageHandler(filters.Regex('^❓ Help$'),      cmd_help))
     
     # unknown command handler — always last
