@@ -7,7 +7,7 @@ from .handlers import (
     cmd_unknown, error_handler,
     cmd_events_btn, cmd_birthdays_btn, cmd_settings_btn
 )
-from conversations import remind_conversation, bday_conversation, reg_conversation
+from .conversations import remind_conversation, bday_conversation, reg_conversation
 from .callbacks import handle_callback
 from .scheduler import create_scheduler
 
