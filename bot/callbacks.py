@@ -27,7 +27,7 @@ async def handle_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     elif data.startswith('rem_del_'):
         await _delete_reminder(query, int(data.replace('rem_del_', '')))
     
-    async def _show_events(query, days: int):
+async def _show_events(query, days: int):
         uid = query.from_user.id
         with get_conn() as conn:
             row = conn.execute(
