@@ -298,7 +298,6 @@ def reg_conversation():
     return ConversationHandler(
         entry_points=[
             CallbackQueryHandler(reg_start, pattern='^reg_start$'),
-            MessageHandler(filters.Regex('^⚙️ Settings$'), reg_start),
         ],
         states={
             REG_CALENDAR_ID: [MessageHandler(filters.TEXT & ~filters.COMMAND, reg_calendar_id)],
