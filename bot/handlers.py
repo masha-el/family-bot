@@ -169,6 +169,9 @@ async def cmd_unknown(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 async def cmd_settings_btn(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
+    import logging
+    logging.info(f"Settings button pressed by uid: {uid}")
+    
     with get_conn() as conn:
         row = conn.execute(
             'SELECT * FROM user_calendars WHERE telegram_id=?', (uid,)
