@@ -12,6 +12,8 @@ jobs:
   build-and-push:
     name: Build & Push
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       packages: write
@@ -40,16 +42,18 @@ jobs:
     name: Deploy to Server
     needs: build-and-push
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     # only deploy on pushes to main, not on PRs
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v2.1.7
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Set up gcloud
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v2.1.4
 
       - name: Deploy to GCP VM via IAP tunnel
         run: |

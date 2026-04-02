@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v2.1.7
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
       
       - name: Set Up Gcloud
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v2.1.4
 
       - name: Write SSH key and derive pub key
         run: |
