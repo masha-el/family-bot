@@ -61,7 +61,8 @@ async def cmd_reminders_btn(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         ).fetchall()
     if not rows:
         await update.message.reply_text(
-            "⏰ *No upcoming reminders*",
+            "⏰ *No upcoming reminders*\n"
+            "Tap ⏰ *Remind me* to add one\\.",
             parse_mode="MarkdownV2",
             reply_markup=main_keyboard()
         )

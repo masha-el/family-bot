@@ -208,7 +208,26 @@ async def reg_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 async def reg_calendar_id(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if update.message.text == '❌ Cancel':
         return await _cancel(update, ctx)
-    ctx.user_data['calendar_id'] = update.message.text.strip()
+    
+    cal_id = update.message.text.strip()
+
+    # validation check — must look like an email, not a URL or anything else
+    if ' ' in cal_id or '@' not in cal_id or cal_id.startswith('http'):
+        await update.message.reply_text(
+            "❌ *Invalid Calendar ID*\n"
+            "────────────────────\n"
+            "The Calendar ID should look like:\n"
+            "`your\\.email@gmail\\.com`\n"
+            "or\n"
+            "`xxxxxxxxxx@group\\.calendar\\.google\\.com`\n\n"
+            "Not a URL — just the ID from the _Integrate calendar_ section\\.\n\n"
+            "Please try again:",
+            parse_mode="MarkdownV2",
+            reply_markup=cancel_keyboard()
+        )
+        return REG_CALENDAR_ID
+
+    ctx.user_data['calendar_id'] = cal_id
     await update.message.reply_text(
         "Step 2 of 2 — What's your name?",
         reply_markup=cancel_keyboard()
