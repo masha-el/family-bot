@@ -28,8 +28,12 @@ def main():
     app.add_handler(CallbackQueryHandler(handle_callback))
 
     # Commands
-    app.add_handler(CommandHandler('start', cmd_start))
-    app.add_handler(CommandHandler('help',  cmd_help))
+    app.add_handler(CommandHandler('start',      cmd_start))
+    app.add_handler(CommandHandler('help',       cmd_help))
+    app.add_handler(CommandHandler('settings',   cmd_settings_btn))
+    app.add_handler(CommandHandler('events',     cmd_events_btn))
+    app.add_handler(CommandHandler('reminders',  cmd_reminders_btn))
+    app.add_handler(CommandHandler('birthdays',  cmd_birthdays_btn))
 
     # Reply keyboard button handlers
     app.add_handler(MessageHandler(filters.Regex('^🗓️ Events$'),    cmd_events_btn))

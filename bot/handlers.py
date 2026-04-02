@@ -160,7 +160,7 @@ async def cmd_birthdays_btn(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     )
 
 async def cmd_unknown(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    command = update.message.text.split()[0]
+    command = update.message.text.split()[0].split('@')[0]
     await update.message.reply_text(
         f"❌ *Unknown command:* `{escape_md(command)}`\n"
         "Use /help to see all available commands\\.",
@@ -171,7 +171,7 @@ async def cmd_settings_btn(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
     import logging
     logging.info(f"Settings button pressed by uid: {uid}")
-    
+
     with get_conn() as conn:
         row = conn.execute(
             'SELECT * FROM user_calendars WHERE telegram_id=?', (uid,)
